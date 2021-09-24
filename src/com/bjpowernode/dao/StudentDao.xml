@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bjpowernode.dao.StudentDao">
+    <select id="selectStudentById" resultType="com.bjpowernode.domain.Student">
+        select id, name, age from student where id = #{id}
+    </select>
+    <insert id="insertStudent">
+        insert into student(id, name ,age) values(#{id},#{name},#{age})
+    </insert>
+    <select id="selectAll"  resultMap="studentMap">
+        select id, name as fullname, age from student order by id
+    </select>
+    <select id="selectStudentByAge" resultType="com.bjpowernode.domain.Student">
+        select id, name, age from student where age = ${value}
+    </select>
+    <select id="selectCount" resultType="int">
+        select count(id) from student
+    </select>
+    <select id="selectStudentWhen" resultType="com.bjpowernode.domain.Student">
+        select id, name ,age from student
+            <where>
+                <if test="name != null and name != ''">
+                    name = #{name}
+                </if>
+                <if test="age != null">
+                    and age = #{age}
+                </if>
+            </where>
+    </select>
+    <delete id="deleteStudentsById">
+        delete from student where id in
+        <foreach collection="array" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="selectStudentClass" resultType="map">
+        select s.name as sname, c.name as cname from student s join class c on s.classroom = c.id
+    </select>
+    <select id="selectStudentClassByVo" resultType="com.bjpowernode.vo.StudentClass">
+        select s.id sId, s.name sName, s.age sAge, s.classroom sClass, c.id cId, c.name cClass from student s join class c on s.classroom = c.id where s.name like '%' #{name} '%'
+    </select>
+
+    
+    <resultMap id="studentMap" type="com.bjpowernode.domain.Student">
+        <id property="id" column="id"/>
+        <result property="name" column="fullname"/>
+        <result property="age" column="age"/>
+    </resultMap>
+
+
+</mapper>
